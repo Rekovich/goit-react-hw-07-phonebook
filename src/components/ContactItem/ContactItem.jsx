@@ -1,22 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import css from './contact-item.module.css';
-import { deleteContactAction } from 'redux/contacts/contacts-slice';
 import { useDispatch } from 'react-redux';
+import { deleteContactsThunk } from 'redux/contacts/contacts-thunk';
 
-const ContactItem = ({ name, number, contactId }) => {
-  const dispatch = useDispatch()
+const ContactItem = ({ name, number, id }) => {
+  const dispatch = useDispatch();
 
-  const deleteContact = (contactId) => dispatch(deleteContactAction(contactId))
+  const deleteContact = id => {
+    console.log(id);
+    dispatch(deleteContactsThunk(id));
+  };
 
   return (
-    <li key={contactId} className={css.contactItem}>
+    <li key={id} className={css.contactItem}>
       <span className={css.contactItem__text}>{name}</span>
       <span className={css.contactItem__text}>{number}</span>
       <button
         className={css.contactItem__button}
         type="button"
-        onClick={() => deleteContact(contactId)}
+        onClick={() => deleteContact(id)}
       >
         Delete
       </button>
@@ -27,8 +30,7 @@ const ContactItem = ({ name, number, contactId }) => {
 ContactItem.propTypes = {
   name: PropTypes.string.isRequired,
   number: PropTypes.string.isRequired,
-  contactId: PropTypes.string.isRequired,
- 
+  id: PropTypes.string,
 };
 
 export default ContactItem;

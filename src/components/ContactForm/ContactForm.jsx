@@ -1,17 +1,20 @@
-import { useState } from 'react';
-import { nanoid } from 'nanoid';
+import { useEffect, useState } from 'react';
 import css from './contact-form.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectContacts } from 'redux/contacts/contacts-selector';
-import { addContactAction } from 'redux/contacts/contacts-slice';
+import {
+  addContactsThunk,
+  getContactsThunk,
+} from 'redux/contacts/contacts-thunk';
 
-const ContactForm = ({ addContact }) => {
+const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
-  const nameInputId = nanoid(4);
-  const numberInputId = nanoid(4);
 
   const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getContactsThunk());
+  }, [dispatch]);
 
   const handleChange = e => {
     const { name, value } = e.currentTarget;
@@ -32,7 +35,6 @@ const ContactForm = ({ addContact }) => {
     e.preventDefault();
 
     const newContacts = {
-      id: nanoid(5),
       name: name,
       number: number,
     };
@@ -45,7 +47,7 @@ const ContactForm = ({ addContact }) => {
     ) {
       return alert(`${name} is already in contacts`);
     }
-    dispatch(addContactAction(newContacts));
+    dispatch(addContactsThunk(newContacts));
     setName('');
     setNumber('');
   };
@@ -53,12 +55,9 @@ const ContactForm = ({ addContact }) => {
   return (
     <div className={css.form}>
       <form onSubmit={handleSubmit}>
-        <label htmlFor={nameInputId} className={css.formLabel}>
-          Name
-        </label>
+        <label className={css.formLabel}>Name</label>
         <input
           className={css.formInput}
-          id={nameInputId}
           type="text"
           name="name"
           value={name}
@@ -67,12 +66,9 @@ const ContactForm = ({ addContact }) => {
           title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
           required
         />
-        <label htmlFor={numberInputId} className={css.formLabel}>
-          Number
-        </label>
+        <label className={css.formLabel}>Number</label>
         <input
           className={css.formInput}
-          id={numberInputId}
           type="tel"
           name="number"
           value={number}
